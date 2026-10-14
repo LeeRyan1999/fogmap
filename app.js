@@ -48,10 +48,10 @@ const shown={};function anim(id,v,fmt){const el=$(id),from=shown[id]??0;if(from=
 const kfmt=v=>v>=10000?(v/1000).toFixed(1)+'k':Math.round(v).toLocaleString();
 function hud(){anim('steps',S.stepSrc==='native'?(S.nsteps||0):Math.round(S.dist/0.75),kfmt);anim('km',S.dist/1000,v=>v>=1000?Math.round(v).toLocaleString():v.toFixed(2));anim('cnt',Object.keys(S.checks).length,v=>Math.round(v)+'');anim('ms',doneCountries().length,v=>Math.round(v)+'');}
 function toast(t,o={}){const e=$('toast');e.className='glass'+(o.big?' big':'');e.innerHTML=(o.badge||'')+'<div>'+(o.kicker?'<small>'+o.kicker+'</small>':'')+t+'</div>';void e.offsetWidth;e.classList.add('show');if(navigator.vibrate&&o.badge)navigator.vibrate(30);clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),o.big?3600:2600);}
-function hint(t){if(t)$('hint').textContent=t;$('hint').classList.toggle('show',!!t);}
-function setPos(ll,move){if(S.pos&&move){const d=hav(S.pos,ll);if(d<500000)S.dist+=d;}S.pos=ll;S.trail.push(ll);if(S.trail.length>3000)S.trail.shift();trailLine.setLatLngs(S.trail);
+const arrT={};function hint(t){if(t)$('hint').textContent=t;$('hint').classList.toggle('show',!!t);}
+function setPos(ll,move){if(move&&!mode&&$('hint').textContent.startsWith('點「🚩'))hint('');if(S.pos&&move){const d=hav(S.pos,ll);if(d<500000)S.dist+=d;}S.pos=ll;S.trail.push(ll);if(S.trail.length>3000)S.trail.shift();trailLine.setLatLngs(S.trail);
  if(!me)me=L.marker(ll,{icon:peg,zIndexOffset:1000}).addTo(map);else me.setLatLng(ll);save();hud();fog.draw();
- const near=cities.find(c=>!S.checks[c.id]&&hav(ll,[c.lat,c.lng])<25000);if(near)toast(`你抵達了 ${esc(near.n)}！點城市即可打卡`,{kicker:'📍 新地點'});}
+ const near=cities.find(c=>!S.checks[c.id]&&hav(ll,[c.lat,c.lng])<25000);if(near&&Date.now()-(arrT[near.id]||0)>600000&&(arrT[near.id]=Date.now()))toast(`你抵達了 ${esc(near.n)}！點城市即可打卡`,{kicker:'📍 新地點'});}
 let mode=null;
 function setMode(m){mode=mode===m?null:m;$('bStart').classList.toggle('on',mode==='start');$('bDemo').classList.toggle('on',mode==='demo');hint(mode==='start'?'點地圖設定出發點':mode==='demo'?'模擬模式：點地圖讓小人走過去':'');}
 map.on('click',e=>{const ll=[e.latlng.lat,e.latlng.lng];if(mode==='start'){S.start=ll;startMk.setLatLng(ll).addTo(map);S.trail=[];S.pos=null;setPos(ll,false);setMode(null);toast('出發點已設定，冒險開始！',{kicker:'🚩 出發'});}

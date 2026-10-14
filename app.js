@@ -44,7 +44,7 @@ const doneCountries=()=>Object.keys(byCountry).filter(cc=>byCountry[cc].list.eve
 const shown={};function anim(id,v,fmt){const el=$(id),from=shown[id]??0;if(from===v){el.textContent=fmt(v);return;}shown[id]=v;if(Math.abs(v-from)>0&&id!=='steps'&&id!=='km'){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');}
  cancelAnimationFrame(el._r);const t0=performance.now(),D=600;const f=t=>{const k=Math.min(1,(t-t0)/D),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(v-from)*e);if(k<1)el._r=requestAnimationFrame(f);};el._r=requestAnimationFrame(f);}
 const kfmt=v=>v>=10000?(v/1000).toFixed(1)+'k':Math.round(v).toLocaleString();
-function hud(){anim('steps',Math.round(S.dist/0.75),kfmt);anim('km',S.dist/1000,v=>v>=1000?Math.round(v).toLocaleString():v.toFixed(2));anim('cnt',Object.keys(S.checks).length,v=>Math.round(v)+'');anim('ms',doneCountries().length,v=>Math.round(v)+'');}
+function hud(){anim('steps',S.stepSrc==='native'?(S.nsteps||0):Math.round(S.dist/0.75),kfmt);anim('km',S.dist/1000,v=>v>=1000?Math.round(v).toLocaleString():v.toFixed(2));anim('cnt',Object.keys(S.checks).length,v=>Math.round(v)+'');anim('ms',doneCountries().length,v=>Math.round(v)+'');}
 function toast(t,o={}){const e=$('toast');e.className='glass'+(o.big?' big':'');e.innerHTML=(o.badge||'')+'<div>'+(o.kicker?'<small>'+o.kicker+'</small>':'')+t+'</div>';void e.offsetWidth;e.classList.add('show');if(navigator.vibrate&&o.badge)navigator.vibrate(30);clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),o.big?3600:2600);}
 function hint(t){if(t)$('hint').textContent=t;$('hint').classList.toggle('show',!!t);}
 function setPos(ll,move){if(S.pos&&move){const d=hav(S.pos,ll);if(d<500000)S.dist+=d;}S.pos=ll;S.trail.push(ll);if(S.trail.length>3000)S.trail.shift();trailLine.setLatLngs(S.trail);
@@ -78,7 +78,7 @@ function openCity(c){const ck=S.checks[c.id];const cn=byCountry[c.cc],got=cn.lis
 $('bAch').onclick=()=>{const rows=Object.entries(byCountry).map(([cc,v])=>({cc,v,g:v.list.filter(x=>S.checks[x.id]).length})).sort((a,b)=>b.g/b.v.list.length-a.g/a.v.list.length||b.g-a.g||a.v.name.localeCompare(b.v.name));
  const done=rows.filter(r=>r.g===r.v.list.length),nc=Object.keys(S.checks).length;
  const recent=Object.entries(S.checks).sort((a,b)=>b[1].d-a[1].d).slice(0,6).map(([id])=>cities.find(c=>c.id===id)).filter(Boolean);
- panel('🏆 冒險日誌',`<div class="cards"><div class="card"><small>👣 步數</small><b>${Math.round(S.dist/0.75).toLocaleString()}</b></div><div class="card"><small>🧭 公里</small><b>${(S.dist/1000).toFixed(2)}</b></div><div class="card"><small>🏰 城市成就</small><b>${nc}<small> / ${cities.length}</small></b></div><div class="card"><small>👑 國家里程碑</small><b>${done.length}<small> / ${rows.length}</small></b></div></div>`+
+ panel('🏆 冒險日誌',`<div class="cards"><div class="card"><small>👣 步數</small><b>${(S.stepSrc==='native'?(S.nsteps||0):Math.round(S.dist/0.75)).toLocaleString()}</b></div><div class="card"><small>🧭 公里</small><b>${(S.dist/1000).toFixed(2)}</b></div><div class="card"><small>🏰 城市成就</small><b>${nc}<small> / ${cities.length}</small></b></div><div class="card"><small>👑 國家里程碑</small><b>${done.length}<small> / ${rows.length}</small></b></div></div>`+
  (recent.length?`<div class="sec">最近解鎖</div>`+recent.map(c=>`<div class="row">${badge('done','🏰')}<div class="nm"><div><b>${esc(c.n)}</b></div><small style="color:var(--mut)">${esc(c.co)}</small></div></div>`).join(''):'')+
  `<div class="sec">各國進度</div>`+rows.slice(0,80).map(r=>{const f=r.g===r.v.list.length;return `<div class="row">${badge(f?'gold':r.g?'done':'grey',f?'👑':'🌐')}<div class="nm"><div>${esc(r.v.name)}</div><div class="pb"><i style="width:${100*r.g/r.v.list.length}%"></i></div></div><span class="ct">${r.g}/${r.v.list.length}</span></div>`;}).join('')+
  (rows.length>80?`<div class="sub" style="margin-top:8px">還有 ${rows.length-80} 個國家等你探索…</div>`:'')+
@@ -89,5 +89,6 @@ hud();if(!S.start)hint('點「🚩 出發點」開始你的冒險');
 if(!localStorage.getItem('fogmap_onb')){const o=$('onb');o.classList.remove('hide');let i=0;const ss=o.querySelectorAll('.onb-s'),ds=o.querySelectorAll('.dots i');
  const fin=()=>{localStorage.setItem('fogmap_onb','1');o.classList.add('hide');};
  $('onbNext').onclick=()=>{if(i>=2)return fin();ss[i].classList.remove('on');ds[i].classList.remove('on');i++;ss[i].classList.add('on');ds[i].classList.add('on');if(i===2)$('onbNext').textContent='開始冒險';};$('onbSkip').onclick=fin;}
+window.FogApp={S,save,setPos,hud,toast,hav,$};
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();

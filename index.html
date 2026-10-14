@@ -1,0 +1,16 @@
+<!doctype html><html lang="zh-TW"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="迷霧地圖">
+<meta name="theme-color" content="#3b6ea5"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
+<title>迷霧地圖</title><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/MarkerCluster.css"><link rel="stylesheet" href="vendor/MarkerCluster.Default.css"><link rel="stylesheet" href="style.css"></head><body>
+<div id="map"></div>
+<div id="hud"><div><b id="steps">0</b><span>步</span></div><div><b id="km">0.00</b><span>公里</span></div><div><b id="cnt">0</b><span>城市</span></div><div><b id="ms">0</b><span>國家</span></div></div>
+<div id="hint"></div>
+<div id="bar">
+<button id="bStart">📍 出發點</button><button id="bGps">🛰️ 追蹤</button><button id="bDemo">🚶 模擬</button><button id="bLayer">🧭 CARTO</button><button id="bAch">🏆 成就</button>
+</div>
+<div id="panel" class="hide"><div class="ph"><b id="ptitle"></b><button id="pclose">✕</button></div><div id="pbody"></div></div>
+<div id="toast"></div>
+<script src="config.js"></script><script src="cities.js"></script><script src="vendor/leaflet.js"></script><script src="vendor/leaflet.markercluster.js"></script><script src="app.js"></script>
+</body></html>

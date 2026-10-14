@@ -2,7 +2,8 @@
 const $=id=>document.getElementById(id);
 const badge=(kind,label)=>{const g=kind==='gold'?['#fff3c4','#e9b949','#a8670c']:kind==='done'?['#fff3c4','#e9b949','#a8670c']:['#f3efe6','#cfc4ad','#8b7f69'];const id='g'+Math.random().toString(36).slice(2,7);
  return `<svg class="bd" viewBox="0 0 64 64"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g[0]}"/><stop offset=".55" stop-color="${g[1]}"/><stop offset="1" stop-color="${g[2]}"/></linearGradient></defs><path d="M20 40 L14 62 L24 56 L32 62 L30 42Z M44 40 L50 62 L40 56 L32 62 L34 42Z" fill="${kind==='gold'?'#c0392b':'#7f8c8d'}" opacity=".85"/><polygon points="32,2 40,8 50,8 53,18 60,24 56,33 58,43 48,46 42,54 32,50 22,54 16,46 6,43 8,33 4,24 11,18 14,8 24,8" fill="url(#${id})" stroke="${g[2]}" stroke-width="1.5"/><circle cx="32" cy="27" r="15" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><text x="32" y="33" text-anchor="middle" font-size="17">${label}</text></svg>`;};
-const S=JSON.parse(localStorage.getItem('fogmap')||'null')||{start:null,pos:null,dist:0,trail:[],checks:{}};
+const S=(()=>{const D={start:null,pos:null,dist:0,trail:[],checks:{}};const raw=localStorage.getItem('fogmap');let o=null;try{o=JSON.parse(raw||'null');}catch(e){try{localStorage.setItem('fogmap_bak',raw);}catch(_){}console.warn('fogmap: corrupt saved state, backed up to fogmap_bak');}
+ if(!o||typeof o!=='object'||Array.isArray(o))o={};o=Object.assign(D,o);if(!Array.isArray(o.trail))o.trail=[];if(!o.checks||typeof o.checks!=='object')o.checks={};if(typeof o.dist!=='number'||!isFinite(o.dist))o.dist=0;return o;})();
 const save=()=>localStorage.setItem('fogmap',JSON.stringify(S));
 const PIN='<svg viewBox="0 0 24 32"><path d="M12 1C6 1 1.5 5.5 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.5 18 1 12 1z"/><circle cx="12" cy="11" r="4"/></svg>';
 const cityIcon=d=>L.divIcon({className:'',iconSize:[16,21],iconAnchor:[8,20],html:`<div class="pin city${d?' done':''}">${PIN}</div>`});
@@ -27,6 +28,7 @@ const dk=matchMedia('(prefers-color-scheme: dark)').matches;const fg=g.createLin
 const hole=(ll,km)=>{const p=m.latLngToContainerPoint(ll),p2=m.latLngToContainerPoint([ll[0]+km/111,ll[1]]);const r=1.3*Math.max(10,Math.abs(p.y-p2.y));const gr=g.createRadialGradient(p.x,p.y,0,p.x,p.y,r);gr.addColorStop(0,'#000');gr.addColorStop(.45,'rgba(0,0,0,.95)');gr.addColorStop(.7,'rgba(0,0,0,.6)');gr.addColorStop(.88,'rgba(0,0,0,.2)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.beginPath();g.arc(p.x,p.y,r,0,7);g.fill();};
 S.trail.forEach(t=>hole(t,3));if(S.start)hole(S.start,30);if(S.pos)hole(S.pos,10);cities.forEach(c=>S.checks[c.id]&&hole([c.lat,c.lng],60));g.globalCompositeOperation='source-over';}});
 const fog=new Fog().addTo(map);window.fogmap=map;
+const _dm=matchMedia('(prefers-color-scheme: dark)');_dm.addEventListener&&_dm.addEventListener('change',()=>fog.draw());
 // Pegman avatar
 const peg=L.divIcon({className:'peg',iconSize:[36,54],iconAnchor:[18,50],html:`<svg width="36" height="54" viewBox="0 0 36 54" overflow="visible"><ellipse class="shadow" cx="18" cy="50" rx="9" ry="3" fill="#000" opacity=".3"/><g class="bob">
 <path d="M12 33 l-1 13 a2.5 2.5 0 0 0 5 0 l1-9 1 9 a2.5 2.5 0 0 0 5 0 l-1-13z" fill="#e0a21e" stroke="#9a6a08" stroke-width="1.2"/>
@@ -54,7 +56,8 @@ let mode=null;
 function setMode(m){mode=mode===m?null:m;$('bStart').classList.toggle('on',mode==='start');$('bDemo').classList.toggle('on',mode==='demo');hint(mode==='start'?'點地圖設定出發點':mode==='demo'?'模擬模式：點地圖讓小人走過去':'');}
 map.on('click',e=>{const ll=[e.latlng.lat,e.latlng.lng];if(mode==='start'){S.start=ll;startMk.setLatLng(ll).addTo(map);S.trail=[];S.pos=null;setPos(ll,false);setMode(null);toast('出發點已設定，冒險開始！',{kicker:'🚩 出發'});}
  else if(mode==='demo'){walkTo(ll);}});
-function walkTo(to){if(!S.pos){setPos(to,false);return;}const from=S.pos,n=20;let i=0;const pe=me&&me.getElement();pe&&pe.classList.add('walk');const t=setInterval(()=>{i++;if(i>=n&&pe)setTimeout(()=>pe.classList.remove('walk'),200);setPos([from[0]+(to[0]-from[0])*i/n,from[1]+(to[1]-from[1])*i/n],true);if(i>=n)clearInterval(t);},40);}
+let walkT=null;
+function walkTo(to){if(!S.pos){setPos(to,false);return;}clearInterval(walkT);const from=S.pos,n=20;let i=0;const pe=me&&me.getElement();pe&&pe.classList.add('walk');const t=walkT=setInterval(()=>{i++;if(i>=n&&pe)setTimeout(()=>pe.classList.remove('walk'),200);setPos([from[0]+(to[0]-from[0])*i/n,from[1]+(to[1]-from[1])*i/n],true);if(i>=n)clearInterval(t);},40);}
 $('bStart').onclick=()=>{if(!navigator.geolocation){setMode('start');return;}setMode('start');
  if(confirm('要使用目前 GPS 位置作為出發點嗎？\n（取消則點地圖手動設定）'))navigator.geolocation.getCurrentPosition(p=>{const ll=[p.coords.latitude,p.coords.longitude];S.start=ll;startMk.setLatLng(ll).addTo(map);S.trail=[];S.pos=null;setPos(ll,false);map.setView(ll,13);setMode(null);toast('出發點已設定，冒險開始！',{kicker:'🚩 出發'});},()=>toast('無法取得定位，請點地圖設定'));};
 let watch=null;

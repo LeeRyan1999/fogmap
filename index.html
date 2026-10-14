@@ -2,15 +2,39 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="迷霧地圖">
-<meta name="theme-color" content="#3b6ea5"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg">
-<title>迷霧地圖</title><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/MarkerCluster.css"><link rel="stylesheet" href="vendor/MarkerCluster.Default.css"><link rel="stylesheet" href="style.css"></head><body>
+<meta name="theme-color" content="#f4efe3" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#14161c" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png"><link rel="icon" href="icon.svg">
+<link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="icons/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
+<link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png">
+<title>迷霧地圖</title><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/MarkerCluster.css"><link rel="stylesheet" href="style.css"></head><body>
 <div id="map"></div>
-<div id="hud"><div><b id="steps">0</b><span>步</span></div><div><b id="km">0.00</b><span>公里</span></div><div><b id="cnt">0</b><span>城市</span></div><div><b id="ms">0</b><span>國家</span></div></div>
-<div id="hint"></div>
-<div id="bar">
-<button id="bStart">📍 出發點</button><button id="bGps">🛰️ 追蹤</button><button id="bDemo">🚶 模擬</button><button id="bLayer">🧭 CARTO</button><button id="bAch">🏆 成就</button>
-</div>
-<div id="panel" class="hide"><div class="ph"><b id="ptitle"></b><button id="pclose">✕</button></div><div id="pbody"></div></div>
+<header id="hud" class="glass">
+ <div class="stat"><span class="ic">👣</span><div><b id="steps">0</b><small>步數</small></div></div>
+ <div class="stat"><span class="ic">🧭</span><div><b id="km">0.00</b><small>公里</small></div></div>
+ <div class="stat"><span class="ic">🏰</span><div><b id="cnt">0</b><small>城市</small></div></div>
+ <div class="stat"><span class="ic">👑</span><div><b id="ms">0</b><small>國家</small></div></div>
+</header>
+<div id="hint" class="glass"></div>
+<nav id="bar" class="glass">
+ <button id="bStart"><i>🚩</i><span>出發點</span></button>
+ <button id="bGps"><i>📡</i><span>追蹤</span></button>
+ <button id="bDemo" class="main"><i>🚶</i><span>模擬</span></button>
+ <button id="bLayer"><i>🗺️</i><span>圖層</span></button>
+ <button id="bAch"><i>🏆</i><span>成就</span></button>
+</nav>
+<div id="scrim"></div>
+<section id="panel" class="sheet"><div class="handle" id="handle"></div><div class="ph"><b id="ptitle"></b><button id="pclose" aria-label="關閉">✕</button></div><div id="pbody"></div></section>
 <div id="toast"></div>
+<div id="onb" class="hide"><div class="onb-card">
+ <div class="onb-art"><svg viewBox="0 0 120 120" width="120" height="120"><defs><radialGradient id="og" cx=".5" cy=".4"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#e2a52b"/></radialGradient></defs><circle cx="60" cy="60" r="54" fill="url(#og)"/><path d="M30 78 Q60 28 90 78Z" fill="#3b6e5a" opacity=".85"/><path d="M48 78 Q66 46 84 78Z" fill="#2c5546"/><circle cx="60" cy="40" r="7" fill="#fff8e1"/><path d="M20 84h80" stroke="#7a4f12" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 8"/></svg></div>
+ <div class="onb-steps">
+  <div class="onb-s on"><h2>歡迎來到迷霧地圖</h2><p>世界被迷霧籠罩。每一步，都會為你驅散一點未知。</p></div>
+  <div class="onb-s"><h2>🚩 設定出發點</h2><p>用 GPS 或點地圖選擇起點，小人會陪你一起冒險，自動記錄步數與公里數。</p></div>
+  <div class="onb-s"><h2>🏰 城市打卡</h2><p>全球 6,000+ 座城市等你探索。打卡留下回憶、解鎖成就，走完一個國家就是一座里程碑！</p></div>
+ </div>
+ <div class="dots"><i class="on"></i><i></i><i></i></div>
+ <button class="btn wide" id="onbNext">下一步</button><button class="link" id="onbSkip">略過</button>
+</div></div>
 <script src="config.js"></script><script src="cities.js"></script><script src="vendor/leaflet.js"></script><script src="vendor/leaflet.markercluster.js"></script><script src="app.js"></script>
 </body></html>

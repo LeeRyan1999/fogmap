@@ -2,9 +2,9 @@
 
 | File | Source | License |
 |---|---|---|
-| `regions.js` (continent → subregion → country) | UN M49 via [lukes/ISO-3166-Countries-with-Regional-Codes](https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes); Americas split into North America (Northern America, Central America, Caribbean) and South America; AQ → Antarctica, XK → Southern Europe | CC BY-SA 4.0 (dataset); UN M49 is public |
+| `regions.js` (continent → subregion → country) | UN M49 via [lukes/ISO-3166-Countries-with-Regional-Codes](https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes); Americas split into North America (Northern America, Central America, Caribbean) and South America; AQ → Antarctica, TW → Eastern Asia (missing from the M49 list), XK → Southern Europe | CC BY-SA 4.0 (dataset); UN M49 is public |
 | `countries.json` (choropleth) | [Natural Earth](https://www.naturalearthdata.com/) 1:50m Admin 0 Countries, Douglas–Peucker simplified (0.04°), 2-decimal coordinates | Public domain |
 | `poi/<CC>.json` airports | [OurAirports](https://ourairports.com/data/): large_airport + medium_airport with scheduled_service=yes and an IATA code | Public domain |
 | `poi/<CC>.json` ports | NGA [World Port Index (Pub. 150)](https://msi.nga.mil/Publications/WPI): harbor size Large or Medium (countries with none get up to 3 Small ports) | Public domain (US Government) |
 
-Sovereign-country count "/195" = 193 UN members + Vatican (VA) + Palestine (PS); Taiwan (TW) and Kosovo (XK) also count as visited (capped at 195).
+Country count "/197" = 193 UN members + Vatican (VA) + Palestine (PS) + Taiwan (TW) + Kosovo (XK). Taiwan is placed in Eastern Asia and Kosovo in Southern Europe (overrides in `tools/build_data.py`). Antarctica (AQ) has no cities but is listed under 南極洲 with its outline and ports; it is not part of the 197.

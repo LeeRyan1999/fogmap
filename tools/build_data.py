@@ -12,7 +12,7 @@ os.makedirs(OUT+'/poi',exist_ok=True)
 src=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','cities.js'),encoding='utf-8').read()
 COUNTRIES=json.loads(re.search(r'window\.COUNTRIES=(\{.*?\});',src,re.S).group(1))
 CITIES=json.loads(re.search(r'window\.CITIES_RAW=(\[.*?\]\]);',src,re.S).group(1))
-CCS=sorted(set(c[1] for c in CITIES))
+CCS=sorted(set(c[1] for c in CITIES)|{'AQ'})  # AQ: no cities, but outline + ports
 # ---- regions ----
 CONT=[('AS','亞洲','Asia'),('EU','歐洲','Europe'),('AF','非洲','Africa'),('NA','北美洲','North America'),('SA','南美洲','South America'),('OC','大洋洲','Oceania'),('AN','南極洲','Antarctica')]
 SUBZH={'Eastern Asia':'東亞','South-eastern Asia':'東南亞','Southern Asia':'南亞','Central Asia':'中亞','Western Asia':'西亞',
@@ -25,6 +25,7 @@ reg={}
 for cc in CCS:
   x=m49.get(cc)
   if cc=='XK': reg[cc]=('EU','Southern Europe');continue
+  if cc=='TW': reg[cc]=('AS','Eastern Asia');continue
   if not x or not x['region']: reg[cc]=('AN','Antarctica');continue
   r,s,i=x['region'],x['sub-region'],x['intermediate-region']
   if r=='Americas':
@@ -36,7 +37,8 @@ for cc in CCS:
   assert reg[cc][1] in SUBZH,(cc,reg[cc])
 UN193='AF AL DZ AD AO AG AR AM AU AT AZ BS BH BD BB BY BE BZ BJ BT BO BA BW BR BN BG BF BI CV KH CM CA CF TD CL CN CO KM CG CD CR CI HR CU CY CZ DK DJ DM DO EC EG SV GQ ER EE SZ ET FJ FI FR GA GM GE DE GH GR GD GT GN GW GY HT HN HU IS IN ID IR IQ IE IL IT JM JP JO KZ KE KI KP KR KW KG LA LV LB LS LR LY LI LT LU MG MW MY MV ML MT MH MR MU MX FM MD MC MN ME MA MZ MM NA NR NP NL NZ NI NE NG MK NO OM PK PW PA PG PY PE PH PL PT QA RO RU RW KN LC VC WS SM ST SA SN RS SC SL SG SK SI SB SO ZA SS ES LK SD SR SE CH SY TJ TZ TH TL TG TO TT TN TR TM TV UG UA AE GB US UY UZ VU VE VN YE ZM ZW'.split()
 assert len(set(UN193))==193,len(set(UN193))
-SOV=UN193+['VA','PS']
+SOV=UN193+['VA','PS','TW','XK']  # 197 countries
+assert len(set(SOV))==197
 # ---- airports ----
 poi=collections.defaultdict(lambda:{'a':[],'p':[]})
 for x in csv.DictReader(open(f'{SRC}/airports.csv',encoding='utf-8')):

@@ -1,4 +1,4 @@
-const C='fogmap-v13';const TMAX=2000;let tn=0;
+const C='fogmap-v14';const TMAX=2000;let tn=0;
 const trim=c=>c.keys().then(k=>k.length>TMAX&&Promise.all(k.slice(0,k.length-TMAX).map(r=>c.delete(r)))).catch(()=>{});const A=['./','index.html','app.js','native.js','style.css','config.js','cities.js','vendor/leaflet.js','vendor/leaflet.css','vendor/leaflet.markercluster.js','vendor/MarkerCluster.css','vendor/MarkerCluster.Default.css','manifest.webmanifest','icon.svg','icons/apple-touch-icon.png','icons/icon-512.png','data/regions.js','data/countries.json'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(A)));self.skipWaiting();});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C&&x!=='tiles').map(x=>caches.delete(x)))));self.clients.claim();});

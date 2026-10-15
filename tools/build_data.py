@@ -11,8 +11,8 @@ OUT=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','data')
 os.makedirs(OUT+'/poi',exist_ok=True)
 src=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','cities.js'),encoding='utf-8').read()
 COUNTRIES=json.loads(re.search(r'window\.COUNTRIES=(\{.*?\});',src,re.S).group(1))
-CITIES=json.loads(re.search(r'window\.CITIES_RAW=(\[.*?\]\]);',src,re.S).group(1))
-CCS=sorted(set(c[1] for c in CITIES)|{'AQ'})  # AQ: no cities, but outline + ports
+CITY_DATA=json.loads(re.search(r'window\.CITY_DATA=(\{.*?\});\n',src,re.S).group(1))
+CCS=sorted(set(CITY_DATA)|{'AQ'})  # AQ: no cities, but outline + ports
 # ---- regions ----
 CONT=[('AS','亞洲','Asia'),('EU','歐洲','Europe'),('AF','非洲','Africa'),('NA','北美洲','North America'),('SA','南美洲','South America'),('OC','大洋洲','Oceania'),('AN','南極洲','Antarctica')]
 SUBZH={'Eastern Asia':'東亞','South-eastern Asia':'東南亞','Southern Asia':'南亞','Central Asia':'中亞','Western Asia':'西亞',

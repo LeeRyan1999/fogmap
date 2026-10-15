@@ -7,7 +7,10 @@
 <link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
 <link rel="apple-touch-startup-image" href="icons/splash-1290x2796.png" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3)">
 <link rel="apple-touch-startup-image" href="icons/splash-1170x2532.png">
-<title>迷霧地圖</title><link rel="stylesheet" href="vendor/leaflet.css"><link rel="stylesheet" href="vendor/MarkerCluster.css"><link rel="stylesheet" href="style.css"></head><body>
+<title>迷霧地圖</title>
+<link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin><link rel="dns-prefetch" href="https://a.basemaps.cartocdn.com"><link rel="dns-prefetch" href="https://server.arcgisonline.com">
+<link rel="stylesheet" href="app.min.css?v=15">
+<script defer src="vendor/leaflet.js?v=15"></script><script defer src="config.js?v=15"></script><script defer src="app.min.js?v=15"></script></head><body>
 <div id="map"></div>
 <header id="hud" class="glass">
  <div class="stat"><span class="ic">👣</span><div><b id="steps">0</b><small>步數</small></div></div>
@@ -39,5 +42,4 @@
  <div class="dots"><i class="on"></i><i></i><i></i></div>
  <button class="btn wide" id="onbNext">下一步</button><button class="link" id="onbSkip">略過</button>
 </div></div>
-<script src="config.js"></script><script src="cities.js"></script><script src="data/regions.js"></script><script src="vendor/leaflet.js"></script><script src="vendor/leaflet.markercluster.js"></script><script src="app.js"></script><script src="native.js"></script>
 </body></html>

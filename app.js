@@ -1,4 +1,5 @@
-(()=>{
+(async()=>{
+const V=(document.currentScript&&new URL(document.currentScript.src,location.href).searchParams.get('v'))||'0';
 const $=id=>document.getElementById(id);
 const badge=(kind,label)=>{const g=kind==='gold'?['#fff3c4','#e9b949','#a8670c']:kind==='done'?['#fff3c4','#e9b949','#a8670c']:['#f3efe6','#cfc4ad','#8b7f69'];const id='g'+Math.random().toString(36).slice(2,7);
  return `<svg class="bd" viewBox="0 0 64 64"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${g[0]}"/><stop offset=".55" stop-color="${g[1]}"/><stop offset="1" stop-color="${g[2]}"/></linearGradient></defs><path d="M20 40 L14 62 L24 56 L32 62 L30 42Z M44 40 L50 62 L40 56 L32 62 L34 42Z" fill="${kind==='gold'?'#c0392b':'#7f8c8d'}" opacity=".85"/><polygon points="32,2 40,8 50,8 53,18 60,24 56,33 58,43 48,46 42,54 32,50 22,54 16,46 6,43 8,33 4,24 11,18 14,8 24,8" fill="url(#${id})" stroke="${g[2]}" stroke-width="1.5"/><circle cx="32" cy="27" r="15" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/><text x="32" y="33" text-anchor="middle" font-size="17">${label}</text></svg>`;};
@@ -7,20 +8,27 @@ const S=(()=>{const D={start:null,pos:null,dist:0,trail:[],checks:{}};const raw=
 const save=()=>localStorage.setItem('fogmap',JSON.stringify(S));
 const PIN='<svg viewBox="0 0 24 32"><path d="M12 1C6 1 1.5 5.5 1.5 11.2 1.5 19 12 31 12 31s10.5-12 10.5-19.8C22.5 5.5 18 1 12 1z"/><circle cx="12" cy="11" r="4"/></svg>';
 const cityIcon=d=>L.divIcon({className:'',iconSize:[16,21],iconAnchor:[8,20],html:`<div class="pin city${d?' done':''}">${PIN}</div>`});
-const _ids={};const cities=window.CITIES.map(c=>{let id=c.cc+'-'+c.n;if(_ids[id])id+='@'+c.lat+','+c.lng;_ids[id]=1;return {...c,id};});
-const cById={};cities.forEach(c=>cById[c.id]=c);const byCountry={};cities.forEach(c=>(byCountry[c.cc]=byCountry[c.cc]||{name:c.co,list:[]}).list.push(c));
 const map=L.map('map',{zoomControl:false,worldCopyJump:true,minZoom:2,maxZoom:20}).setView(S.pos||[23.7,121],S.pos?8:3);
 const k=window.CARTO_API_KEY?('?key='+encodeURIComponent(window.CARTO_API_KEY)):'';
 const attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 const osmAttr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 // 有可用的 CARTO 金鑰時用 CARTO Voyager（含街道與標籤）；否則用 OpenStreetMap 標準圖層（最詳細的免費選項，含 POI）
-const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:osmAttr,maxNativeZoom:19,maxZoom:20});
-const carto=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'+k,{attribution:attr,subdomains:'abcd',maxNativeZoom:20,maxZoom:20});
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:osmAttr,maxNativeZoom:19,maxZoom:20,crossOrigin:true,keepBuffer:4,updateWhenZooming:false,updateWhenIdle:L.Browser.mobile});
+const carto=L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'+k,{attribution:attr,subdomains:'abcd',maxNativeZoom:20,maxZoom:20,crossOrigin:true,keepBuffer:4,updateWhenZooming:false,updateWhenIdle:L.Browser.mobile});
 osm.addTo(map);
-const esriSat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles &copy; Esri, Maxar, Earthstar Geographics',maxNativeZoom:19,maxZoom:20});
-const satLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20});
-const satRoads=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20});
+const esriSat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles &copy; Esri, Maxar, Earthstar Geographics',maxNativeZoom:19,maxZoom:20,crossOrigin:true,keepBuffer:4,updateWhenZooming:false,updateWhenIdle:L.Browser.mobile});
+const satLabels=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20,crossOrigin:true,keepBuffer:4,updateWhenZooming:false,updateWhenIdle:L.Browser.mobile});
+const satRoads=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',{maxNativeZoom:19,maxZoom:20,crossOrigin:true,keepBuffer:4,updateWhenZooming:false,updateWhenIdle:L.Browser.mobile});
 const sat=L.layerGroup([esriSat,satRoads,satLabels]);
+// ---- fast start: map + tiles first, then load city/region data and plugins ----
+const loadScript=src=>new Promise((res,rej)=>{const s=document.createElement('script');s.src=src+(src.includes('?')?'&':'?')+'v='+V;s.async=false;s.onload=res;s.onerror=()=>rej(new Error('load '+src));document.head.appendChild(s);});
+if('serviceWorker' in navigator){const hadCtl=!!navigator.serviceWorker.controller;let rl=false;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(hadCtl&&!rl){rl=true;location.reload();}});
+ navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{});});}).catch(()=>{});}
+await new Promise(res=>{let done=false;const go=()=>{if(!done){done=true;res();}};osm.once('tileload load',go);carto.once('tileload load',go);setTimeout(go,700);});
+await Promise.all(['vendor/leaflet.markercluster.js','cities.js','data/regions.js'].map(loadScript));
+const _ids={};const cities=window.CITIES.map(c=>{let id=c.cc+'-'+c.n;if(_ids[id])id+='@'+c.lat+','+c.lng;_ids[id]=1;return {...c,id};});
+const cById={};cities.forEach(c=>cById[c.id]=c);const byCountry={};cities.forEach(c=>(byCountry[c.cc]=byCountry[c.cc]||{name:c.co,list:[]}).list.push(c));
 // Fog of war
 const Fog=L.Layer.extend({onAdd(m){this.c=L.DomUtil.create('canvas');Object.assign(this.c.style,{position:'absolute',pointerEvents:'none'});m.getPane('overlayPane').appendChild(this.c);m.on('moveend zoomend resize viewreset',this.draw,this);this.draw();},
 draw(){const m=map,s=m.getSize(),tl=m.containerPointToLayerPoint([0,0]);L.DomUtil.setPosition(this.c,tl);this.c.width=s.x;this.c.height=s.y;const g=this.c.getContext('2d');
@@ -124,7 +132,7 @@ const choroStyle=f=>{const cc=f.properties.cc,v=visitedSet().has(cc),e=doneCount
  if(hl)return {stroke:true,color:'#2f6f5e',weight:1.6,opacity:.9,fill:true,fillColor:'#2f6f5e',fillOpacity:.08,dashArray:'4 4'};
  return {stroke:false,fill:false};};
 const refreshChoro=()=>{choro&&choro.setStyle(choroStyle);};
-setTimeout(()=>fetch('data/countries.json').then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(gj=>{choro=L.geoJSON(gj,{pane:'choro',interactive:false,style:choroStyle}).addTo(map);}).catch(e=>console.warn('choropleth',e)),300);
+(window.requestIdleCallback||(f=>setTimeout(f,1200)))(()=>fetch('data/countries.json?v='+V).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(gj=>{choro=L.geoJSON(gj,{pane:'choro',interactive:false,style:choroStyle}).addTo(map);}).catch(e=>console.warn('choropleth',e)),{timeout:2500});
 // airports & ports (lazy per country)
 const poiCache={},poiMk={},poiRec={};
 const GL={a:'✈\uFE0E',p:'⚓\uFE0E'};
@@ -132,7 +140,7 @@ const poiIcon=(t,d)=>L.divIcon({className:'',iconSize:[20,20],iconAnchor:[10,10]
 const poiLayer=L.markerClusterGroup({disableClusteringAtZoom:9,maxClusterRadius:45,showCoverageOnHover:false,removeOutsideVisibleBounds:true,iconCreateFunction:cl=>{const n=cl.getChildCount(),d=cl.getAllChildMarkers().some(m=>m.options.done);return L.divIcon({className:'',iconSize:[26,26],iconAnchor:[13,13],html:`<div class="poi clu${d?' done':''}">${GL.a}<small>${n}</small></div>`});}});
 let poiT=null;const refreshPoiLayer=()=>{clearTimeout(poiT);poiT=setTimeout(()=>{poiLayer.clearLayers();poiLayer.addLayers(Object.values(poiRec).filter(p=>!filt||filt.has(p.cc)).map(p=>poiMk[p.id]));},60);};
 function loadPoi(cc){if(poiCache[cc])return poiCache[cc];const pi=R.poi[cc];if(!pi||!(pi[0]+pi[1]))return Promise.resolve({a:[],p:[]});
- return poiCache[cc]=fetch(`data/poi/${cc}.json`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
+ return poiCache[cc]=fetch(`data/poi/${cc}.json?v=${V}`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();}).then(d=>{
   d.a.forEach(a=>{const id='A-'+a[0];if(poiRec[id])return;poiRec[id]={id,t:'a',code:a[0],n:a[1],city:a[2],lat:a[3],lng:a[4],big:a[5],cc};});
   d.p.forEach(p=>{const id='P-'+p[0].slice(1);if(poiRec[id])return;poiRec[id]={id,t:'p',n:p[1],lat:p[2],lng:p[3],big:p[4],cc};});
   Object.values(poiRec).forEach(p=>{if(p.cc===cc&&!poiMk[p.id])poiMk[p.id]=L.marker([p.lat,p.lng],{title:p.n,done:!!S.poi[p.id],icon:poiIcon(p.t,!!S.poi[p.id])}).on('click',()=>openPoi(p));});
@@ -190,5 +198,5 @@ if(!localStorage.getItem('fogmap_onb')){const o=$('onb');o.classList.remove('hid
  const fin=()=>{localStorage.setItem('fogmap_onb','1');o.classList.add('hide');};
  $('onbNext').onclick=()=>{if(i>=2)return fin();ss[i].classList.remove('on');ds[i].classList.remove('on');i++;ss[i].classList.add('on');ds[i].classList.add('on');if(i===2)$('onbNext').textContent='開始冒險';};$('onbSkip').onclick=fin;}
 window.FogApp={S,save,setPos,hud,toast,hav,$,_t:{regionView,selectRegion,openCountry,openPoi,loadPoi,poiRec,setFilter}};
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+if(window.Capacitor)loadScript('native.js').catch(e=>console.warn(e));
 })();

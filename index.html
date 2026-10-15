@@ -14,15 +14,18 @@
  <div class="stat"><span class="ic">🧭</span><div><b id="km">0.00</b><small>公里</small></div></div>
  <div class="stat"><span class="ic">🏰</span><div><b id="cnt">0</b><small>城市</small></div></div>
  <div class="stat"><span class="ic">👑</span><div><b id="ms">0</b><small>國家</small></div></div>
+ <button class="vis" id="vis"><i class="sw v"></i>已拜訪 <b id="vcnt">0</b> / 195 國<i class="sw e"></i>已探索 <b id="ecnt">0</b><span class="go">世界 ›</span></button>
 </header>
 <div id="hint" class="glass"></div>
 <nav id="bar" class="glass">
  <button id="bStart"><i>🚩</i><span>出發點</span></button>
  <button id="bGps"><i>📡</i><span>追蹤</span></button>
  <button id="bDemo" class="main"><i>🚶</i><span>模擬</span></button>
- <button id="bLayer"><i>🗺️</i><span>圖層</span></button>
+ <button id="bWorld"><i>🌐</i><span>世界</span></button>
  <button id="bAch"><i>🏆</i><span>成就</span></button>
 </nav>
+<button id="bLayer" class="glass fab"><i>🗺️</i><span>圖層</span></button>
+<div id="chip" class="glass"></div>
 <div id="scrim"></div>
 <section id="panel" class="sheet"><div class="handle" id="handle"></div><div class="ph"><b id="ptitle"></b><button id="pclose" aria-label="關閉">✕</button></div><div id="pbody"></div></section>
 <div id="toast"></div>
@@ -36,5 +39,5 @@
  <div class="dots"><i class="on"></i><i></i><i></i></div>
  <button class="btn wide" id="onbNext">下一步</button><button class="link" id="onbSkip">略過</button>
 </div></div>
-<script src="config.js"></script><script src="cities.js"></script><script src="vendor/leaflet.js"></script><script src="vendor/leaflet.markercluster.js"></script><script src="app.js"></script><script src="native.js"></script>
+<script src="config.js"></script><script src="cities.js"></script><script src="data/regions.js"></script><script src="vendor/leaflet.js"></script><script src="vendor/leaflet.markercluster.js"></script><script src="app.js"></script><script src="native.js"></script>
 </body></html>
